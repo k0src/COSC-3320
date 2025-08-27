@@ -152,7 +152,7 @@ void printMatrixAdditionTimings(std::vector<int> nValues, int numberOfExecutions
   std::cout << "--------------------------------------------------------\n\n";
 
   csvFile.close();
-  std::cout << "Data written to matrix_addition_timings.csv\n";
+  std::cout << "Data written to matrix_addition_timings.csv" << std::endl;
 }
 
 int main() {
