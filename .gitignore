@@ -11,6 +11,7 @@
 *.out
 *.a
 *.lib
+*.csv
 
 *.7z
 *.dmg
