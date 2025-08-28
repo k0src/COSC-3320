@@ -44,7 +44,7 @@ const getAverageExecutionTime = (
   let index = -1;
 
   // Warmup to trigger JIT optimization
-  for (let i = 0; i < Math.min(1000, executions); i++) {
+  for (let i = 0; i < Math.max(10000, executions); i++) {
     index = func(array, target);
   }
 

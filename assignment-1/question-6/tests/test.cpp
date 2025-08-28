@@ -39,7 +39,7 @@ timingResult getAverageExecutionTime(searchFunction func, std::vector<int>& arra
   int index = -1;
 
   // Warmup
-  for (int i = 0; i < std::min(1000, executions); i++) {
+  for (int i = 0; i < std::max(10000, executions); i++) {
     index = func(array, target);
   }
 

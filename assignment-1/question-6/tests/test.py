@@ -25,7 +25,7 @@ def getAverageExecutionTime(func, array, target, executions):
   index = -1
 
   # Warmup
-  for _ in range(min(1000, executions)):
+  for _ in range(max(10000, executions)):
     index = func(array, target)
 
   start = time.perf_counter_ns()
