@@ -1,6 +1,7 @@
 import { PulseLoader } from "react-spinners";
 import { FaTriangleExclamation } from "react-icons/fa6";
 import styles from "./Controls.module.css";
+import classNames from "classnames";
 
 interface ControlsProps {
   running: boolean;
@@ -17,7 +18,17 @@ export function Controls({
   onExecutionsChange,
   onRunTest,
 }: ControlsProps) {
-  const matrixSizes = [128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768];
+  const matrixSizes = [
+    { value: 128, className: styles.btnSafe },
+    { value: 256, className: styles.btnSafe },
+    { value: 512, className: styles.btnSafe },
+    { value: 1024, className: styles.btnSafe },
+    { value: 2048, className: styles.btnSafe },
+    { value: 4096, className: styles.btnWarning },
+    { value: 8192, className: styles.btnWarning },
+    { value: 16384, className: styles.btnWarningStrong },
+    { value: 32768, className: styles.btnDanger },
+  ];
 
   return (
     <>
@@ -27,12 +38,12 @@ export function Controls({
           <div className={styles.buttonContainer}>
             {matrixSizes.map((size) => (
               <button
-                key={size}
-                onClick={() => onRunTest(size)}
+                key={size.value}
+                onClick={() => onRunTest(size.value)}
                 disabled={running}
-                className={styles.button}
+                className={classNames(styles.button, size.className)}
               >
-                {size}
+                {size.value}
               </button>
             ))}
           </div>

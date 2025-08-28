@@ -27,15 +27,45 @@
   font-family: inherit;
   font-size: 1.4rem;
   padding: 0.8rem 2rem;
-  color: #e3e5e4;
-  background-color: #5a7f71;
   border: none;
   border-radius: 0.4rem;
   transition: background-color 0.2s ease;
 }
 
-.button:hover:not(:disabled) {
+.btnSafe {
+  color: #e3e5e4;
+  background-color: #5a7f71;
+}
+
+.btnSafe:hover:not(:disabled) {
   background: #73988a;
+}
+
+.btnWarning {
+  background: #fde68a;
+  color: #856404;
+}
+
+.btnWarning:hover:not(:disabled) {
+  background: #fdeba1;
+}
+
+.btnWarningStrong {
+  background: #ea580c;
+  color: #5e2305;
+}
+
+.btnWarningStrong:hover:not(:disabled) {
+  background: #ee793d;
+}
+
+.btnDanger {
+  background: #dc2626;
+  color: #420b0b;
+}
+
+.btnDanger:hover:not(:disabled) {
+  background: #e35151;
 }
 
 .button:disabled {
