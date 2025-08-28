@@ -54,7 +54,6 @@ node_modules/
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
-Makefile
 
 *.gcda
 *.gcno

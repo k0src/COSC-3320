@@ -1,0 +1,91 @@
+// Binary search function
+const binarySearch = (array: number[], target: number): number => {
+  let left = 0;
+  let right = array.length - 1;
+
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2);
+
+    if (array[mid] === target) {
+      return mid;
+    } else if (array[mid] < target) {
+      left = mid + 1;
+    } else {
+      right = mid - 1;
+    }
+  }
+
+  return -1;
+};
+
+const createBinarySearchableArray = (size: number): number[] => {
+  const array = new Array(size);
+  for (let i = 0; i < size; i++) {
+    array[i] = i;
+  }
+  return array;
+};
+
+interface TimingResult {
+  index: number;
+  averageExecutionTime: number;
+}
+
+interface SearchFunction {
+  (array: number[], target: number): number;
+}
+
+const getAverageExecutionTime = (
+  func: SearchFunction,
+  array: number[],
+  target: number,
+  executions: number
+): TimingResult => {
+  let index = -1;
+
+  // Warmup to trigger JIT optimization
+  for (let i = 0; i < Math.min(1000, executions); i++) {
+    index = func(array, target);
+  }
+
+  const start = process.hrtime.bigint();
+  for (let i = 0; i < executions; i++) {
+    index = func(array, target);
+  }
+  const end = process.hrtime.bigint();
+
+  return {
+    index,
+    averageExecutionTime: Number(end - start) / executions,
+  };
+};
+
+const runTest = (executions: number) => {
+  const arraySizes = [
+    100, 400, 1600, 6400, 25600, 102400, 409600, 1638400, 6553600,
+  ];
+
+  for (let i = 0; i < arraySizes.length; i++) {
+    const size = arraySizes[i];
+    const array = createBinarySearchableArray(size);
+    const target = size + 1; // Element not in array
+
+    const { index, averageExecutionTime } = getAverageExecutionTime(
+      binarySearch,
+      array,
+      target,
+      executions
+    );
+
+    console.log(
+      `Array Size: ${size}, Binary Search ${
+        index === -1 ? "Unsuccessful" : "Successful"
+      }, Average Execution Time: ${averageExecutionTime.toFixed(3)} (ns)`
+    );
+  }
+};
+
+if (require.main === module) {
+  const executions = Number(process.argv.slice(2)[0]);
+  runTest(executions);
+}

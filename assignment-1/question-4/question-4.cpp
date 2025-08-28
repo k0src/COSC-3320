@@ -71,6 +71,7 @@ Matrix addColumnMajor(const Matrix& A, const Matrix& B) {
 }
 
 using addFunc = std::function<Matrix(const Matrix&, const Matrix&)>;
+using timePoint = std::chrono::high_resolution_clock::time_point;
 
 double getAverageFunctionExecutionTime(addFunc f, int numberOfExecutions, const Matrix& A, const Matrix& B) {
   double totalTime = 0.0;
@@ -80,10 +81,10 @@ double getAverageFunctionExecutionTime(addFunc f, int numberOfExecutions, const 
   }
 
   for (int i = 0; i < numberOfExecutions; i++) {
-    std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
+    timePoint start = std::chrono::high_resolution_clock::now();
     Matrix result = f(A, B);  
 
-    std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
+    timePoint end = std::chrono::high_resolution_clock::now();
     totalTime += std::chrono::duration<double, std::milli>(end - start).count();
   }
 
