@@ -1,0 +1,112 @@
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.matrixButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.controlsTitle {
+  font-weight: 500;
+  color: #e3e5e4;
+  font-size: 1.6rem;
+}
+
+.buttonContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 0.4rem;
+}
+
+.button {
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1.4rem;
+  padding: 0.8rem 2rem;
+  color: #e3e5e4;
+  background-color: #5a7f71;
+  border: none;
+  border-radius: 0.4rem;
+  transition: background-color 0.2s ease;
+}
+
+.button:hover:not(:disabled) {
+  background: #73988a;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.inputContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.label {
+  color: #e3e5e4;
+  font-size: 1.2rem;
+}
+
+.input {
+  width: 85%;
+  padding: 0.8rem 1.2rem;
+  font-size: 1.2rem;
+  background: #171b1f;
+  border: 0.1rem solid #2d343a;
+  border-radius: 0.8rem;
+  color: #e3e5e4;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  height: 44px;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #5a7f71;
+}
+
+.warning {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: #fff3cd;
+  border: 0.1rem solid #ffeaa7;
+  color: #856404;
+  padding: 1.8rem;
+  font-size: 1.2rem;
+  border-radius: 0.4rem;
+  font-weight: 500;
+}
+
+.warningIcon {
+  font-size: 1.4rem;
+}
+
+.loaderContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3.2rem;
+}

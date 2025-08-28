@@ -1,0 +1,45 @@
+.algorithms {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  background-color: #171b1f;
+  border: 0.1rem solid #2d343a;
+  padding: 1.8rem;
+  border-radius: 0.8rem;
+}
+
+.algorithmName {
+  font-weight: 500;
+  color: #e3e5e4;
+  font-size: 1.8rem;
+}
+
+.algorithm {
+  overflow-x: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  border-radius: 0.4rem;
+}
+
+.codeBlock {
+  display: flex;
+  flex-direction: column;
+  background-color: #202429;
+  font-family: "JetbrainsMono", "Cascadia Code", Consolas, monospace;
+  color: #899096;
+  border: 0.1rem solid #2d343a;
+  border-radius: 0.4rem;
+  padding: 1.8rem;
+  font-size: 1.4rem;
+  line-height: 1.4;
+  overflow-x: auto;
+}
+
+.line2 {
+  padding-left: 3.2rem;
+}
+
+.line3 {
+  padding-left: 6.4rem;
+}
