@@ -3,6 +3,8 @@
 #include <chrono>
 #include <vector>
 #include <iomanip>
+#include <random>
+#include <sstream>
 
 // n x n matrix represented as a contiguous block
 struct Matrix {
@@ -33,6 +35,17 @@ struct Matrix {
   }
 };
 
+void fillWithRandomValues(Matrix& A) {
+  int n = A.n;
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<int> dis(1, 100);
+  
+  for (int i = 0; i < n * n; i++) {
+    A.data[i] = dis(gen);
+  }
+}
+
 // Row-major matrix addition
 Matrix addRowMajor(const Matrix& A, const Matrix& B) {
   int n = A.n;
@@ -62,9 +75,14 @@ using addFunc = std::function<Matrix(const Matrix&, const Matrix&)>;
 double getAverageFunctionExecutionTime(addFunc f, int numberOfExecutions, const Matrix& A, const Matrix& B) {
   double totalTime = 0.0;
 
+  if (numberOfExecutions > 1) {
+    Matrix warmup = f(A, B);
+  }
+
   for (int i = 0; i < numberOfExecutions; i++) {
     std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
     Matrix result = f(A, B);  
+
     std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
     totalTime += std::chrono::duration<double, std::milli>(end - start).count();
   }
@@ -107,16 +125,22 @@ void printMatrixAdditionTimings(std::vector<int> nValues, int numberOfExecutions
   for (int i = 0; i < nValues.size(); i++) {
     int n = nValues[i];
     Matrix A(n), B(n);
+    fillWithRandomValues(A);
+    fillWithRandomValues(B);
     
-    double rowTime = getAverageFunctionExecutionTime(addRowMajor, numberOfExecutions, A, B);
-    double colTime = getAverageFunctionExecutionTime(addColumnMajor, numberOfExecutions, A, B);
+    double rowTime = 
+      getAverageFunctionExecutionTime(addRowMajor, numberOfExecutions, A, B);
+    double colTime = 
+      getAverageFunctionExecutionTime(addColumnMajor, numberOfExecutions, A, B);
     
     ScaledTime scaledRowTime = scaleTime(rowTime);
     ScaledTime scaledColTime = scaleTime(colTime);
     
     std::ostringstream rowStr, colStr;
-    rowStr << std::fixed << std::setprecision(6) << scaledRowTime.value << " " << scaledRowTime.unit;
-    colStr << std::fixed << std::setprecision(6) << scaledColTime.value << " " << scaledColTime.unit;
+    rowStr << std::fixed << std::setprecision(6) 
+           << scaledRowTime.value << " " << scaledRowTime.unit;
+    colStr << std::fixed << std::setprecision(6) 
+           << scaledColTime.value << " " << scaledColTime.unit;
     
     std::cout << std::setw(10) << std::right << n << " | "
               << std::setw(20) << std::right << rowStr.str() << " | "
@@ -127,9 +151,8 @@ void printMatrixAdditionTimings(std::vector<int> nValues, int numberOfExecutions
 }
 
 int main() {
-    // 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768
-    std::vector<int> nValues = {128, 256, 512, 1024, 2048, 4096, 8192};
-    int numberOfExecutions = 10; 
+    std::vector<int> nValues = {128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768};
+    int numberOfExecutions = 5; 
     
     std::cout << "\nTesting n values: ";
     for (size_t i = 0; i < nValues.size(); i++) {
