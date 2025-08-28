@@ -84,7 +84,7 @@ function App() {
       rowMajorAdd(a, b, c, n);
     }
     const rowEnd = performance.now();
-    const rowMajorTime = rowEnd - rowStart;
+    const rowMajorTime = (rowEnd - rowStart) / executions;
 
     c.fill(0);
 
@@ -94,7 +94,7 @@ function App() {
       colMajorAdd(a, b, c, n);
     }
     const colEnd = performance.now();
-    const colMajorTime = colEnd - colStart;
+    const colMajorTime = (colEnd - colStart) / executions;
 
     setResults({
       rowMajor: rowMajorTime,
