@@ -1,9 +1,7 @@
 #include <iostream>
 #include <functional>
 #include <chrono>
-#include <random>
 #include <vector>
-#include <fstream>
 #include <iomanip>
 
 // n x n matrix represented as a contiguous block
@@ -34,19 +32,6 @@ struct Matrix {
     return *this;
   }
 };
-
-void fillMatrixWithRandomValues(Matrix& A, int min, int max) {
-  std::random_device rd;
-  std::mt19937 generator(rd());
-  std::uniform_int_distribution<> distribution(min, max);
-  
-  int n = A.n;
-  for (int i = 0; i < n; i++) {
-    for (int j = 0; j < n; j++) {
-      A.data[i * n + j] = distribution(generator);
-    }
-  }
-}
 
 // Row-major matrix addition
 Matrix addRowMajor(const Matrix& A, const Matrix& B) {
@@ -112,9 +97,6 @@ ScaledTime scaleTime(double ms) {
 
 
 void printMatrixAdditionTimings(std::vector<int> nValues, int numberOfExecutions) {
-  std::ofstream csvFile("matrix_addition_timings.csv");
-  csvFile << "n,row_major_time,row_major_unit,column_major_time,column_major_unit\n";
-  
   std::cout << "Matrix Addition Timings\n";
   std::cout << "--------------------------------------------------------\n";
   std::cout << std::setw(10) << std::right << "n" << " | "
@@ -125,8 +107,6 @@ void printMatrixAdditionTimings(std::vector<int> nValues, int numberOfExecutions
   for (int i = 0; i < nValues.size(); i++) {
     int n = nValues[i];
     Matrix A(n), B(n);
-    fillMatrixWithRandomValues(A, 0, 100);
-    fillMatrixWithRandomValues(B, 0, 100);
     
     double rowTime = getAverageFunctionExecutionTime(addRowMajor, numberOfExecutions, A, B);
     double colTime = getAverageFunctionExecutionTime(addColumnMajor, numberOfExecutions, A, B);
@@ -141,18 +121,9 @@ void printMatrixAdditionTimings(std::vector<int> nValues, int numberOfExecutions
     std::cout << std::setw(10) << std::right << n << " | "
               << std::setw(20) << std::right << rowStr.str() << " | "
               << std::setw(20) << std::right << colStr.str() << std::endl;
-    
-    csvFile << n << ","
-            << std::fixed << std::setprecision(6) << scaledRowTime.value << ","
-            << scaledRowTime.unit << ","
-            << std::fixed << std::setprecision(6) << scaledColTime.value << ","
-            << scaledColTime.unit << "\n";
   }
 
   std::cout << "--------------------------------------------------------\n\n";
-
-  csvFile.close();
-  std::cout << "Data written to matrix_addition_timings.csv" << std::endl;
 }
 
 int main() {
