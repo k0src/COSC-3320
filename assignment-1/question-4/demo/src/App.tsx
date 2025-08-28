@@ -16,6 +16,10 @@ function App() {
   const [executions, setExecutions] = useState(3);
   const [results, setResults] = useState<TimingResult | null>(null);
   const [showWarning, setShowWarning] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(
+    undefined
+  );
 
   const checkWarning = (size: number, execs: number) => {
     setShowWarning(size >= 8192 || execs > 10);
@@ -59,49 +63,57 @@ function App() {
   };
 
   const runTest = async (n: number) => {
-    setRunning(true);
-    setResults(null);
-    checkWarning(n, executions);
+    try {
+      setRunning(true);
+      setShowError(false);
+      setErrorMessage(undefined);
+      setResults(null);
+      checkWarning(n, executions);
 
-    await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
-    const size = n * n;
+      const size = n * n;
 
-    // Create matrices
-    const a = new Float32Array(size);
-    const b = new Float32Array(size);
-    const c = new Float32Array(size);
+      // Create matrices
+      const a = new Float32Array(size);
+      const b = new Float32Array(size);
+      const c = new Float32Array(size);
 
-    // Fill with random numbers
-    for (let i = 0; i < size; i++) {
-      a[i] = Math.random();
-      b[i] = Math.random();
+      // Fill with random numbers
+      for (let i = 0; i < size; i++) {
+        a[i] = Math.random();
+        b[i] = Math.random();
+      }
+
+      // Test row-major
+      const rowStart = performance.now();
+      for (let i = 0; i < executions; i++) {
+        rowMajorAdd(a, b, c, n);
+      }
+      const rowEnd = performance.now();
+      const rowMajorTime = (rowEnd - rowStart) / executions;
+
+      c.fill(0);
+
+      // Test column-major
+      const colStart = performance.now();
+      for (let i = 0; i < executions; i++) {
+        colMajorAdd(a, b, c, n);
+      }
+      const colEnd = performance.now();
+      const colMajorTime = (colEnd - colStart) / executions;
+
+      setResults({
+        rowMajor: rowMajorTime,
+        colMajor: colMajorTime,
+        matrixSize: n,
+        executions,
+      });
+    } catch (err) {
+      setShowError(true);
+      setErrorMessage((err as Error).message);
+      console.error("Error during test execution:", err);
     }
-
-    // Test row-major
-    const rowStart = performance.now();
-    for (let i = 0; i < executions; i++) {
-      rowMajorAdd(a, b, c, n);
-    }
-    const rowEnd = performance.now();
-    const rowMajorTime = (rowEnd - rowStart) / executions;
-
-    c.fill(0);
-
-    // Test column-major
-    const colStart = performance.now();
-    for (let i = 0; i < executions; i++) {
-      colMajorAdd(a, b, c, n);
-    }
-    const colEnd = performance.now();
-    const colMajorTime = (colEnd - colStart) / executions;
-
-    setResults({
-      rowMajor: rowMajorTime,
-      colMajor: colMajorTime,
-      matrixSize: n,
-      executions,
-    });
     setRunning(false);
   };
 
@@ -116,6 +128,8 @@ function App() {
             running={running}
             executions={executions}
             showWarning={showWarning}
+            showError={showError}
+            errorMessage={errorMessage || "Out of memory"}
             onExecutionsChange={handleExecutionsChange}
             onRunTest={runTest}
           />

@@ -1,5 +1,5 @@
 import { PulseLoader } from "react-spinners";
-import { FaTriangleExclamation } from "react-icons/fa6";
+import { FaTriangleExclamation, FaXmark } from "react-icons/fa6";
 import styles from "./Controls.module.css";
 import classNames from "classnames";
 
@@ -7,6 +7,8 @@ interface ControlsProps {
   running: boolean;
   executions: number;
   showWarning: boolean;
+  showError: boolean;
+  errorMessage?: string;
   onExecutionsChange: (value: number) => void;
   onRunTest: (size: number) => void;
 }
@@ -15,8 +17,10 @@ export function Controls({
   running,
   executions,
   showWarning,
+  showError,
   onExecutionsChange,
   onRunTest,
+  errorMessage,
 }: ControlsProps) {
   const matrixSizes = [
     { value: 128, className: styles.btnSafe },
@@ -64,11 +68,18 @@ export function Controls({
         </div>
       </div>
 
-      {showWarning && (
+      {showWarning && !showError && (
         <div className={styles.warning}>
           <FaTriangleExclamation className={styles.warningIcon} />
           Warning: Large matrix sizes or many executions may take a long time or
           crash the browser.
+        </div>
+      )}
+
+      {showError && (
+        <div className={styles.error}>
+          <FaXmark className={styles.errorIcon} />
+          Error: {errorMessage}
         </div>
       )}
 

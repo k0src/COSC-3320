@@ -116,21 +116,32 @@ input[type="number"] {
   border-color: #5a7f71;
 }
 
-.warning {
+.warning,
+.error {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  background: #fff3cd;
-  border: 0.1rem solid #ffeaa7;
-  color: #856404;
   padding: 1.8rem;
   font-size: 1.2rem;
   border-radius: 0.4rem;
   font-weight: 500;
 }
 
-.warningIcon {
+.warning {
+  background-color: #fde68a;
+  border: 0.1rem solid #fdeba1;
+  color: #856404;
+}
+
+.error {
+  background-color: #dc2626;
+  border: 0.1rem solid #e35151;
+  color: #420b0b;
+}
+
+.warningIcon,
+.errorIcon {
   font-size: 1.4rem;
 }
 
