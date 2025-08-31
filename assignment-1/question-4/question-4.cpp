@@ -76,7 +76,7 @@ using timePoint = std::chrono::high_resolution_clock::time_point;
 double getAverageFunctionExecutionTime(addFunc f, int numberOfExecutions, const Matrix& A, const Matrix& B) {
   double totalTime = 0.0;
 
-  if (numberOfExecutions > 1) {
+  for (int i = 0; i < 100; i++) {
     Matrix warmup = f(A, B);
   }
 
@@ -153,7 +153,7 @@ void printMatrixAdditionTimings(std::vector<int> nValues, int numberOfExecutions
 
 int main() {
     std::vector<int> nValues = {128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768};
-    int numberOfExecutions = 5; 
+    int numberOfExecutions = 10; 
     
     std::cout << "\nTesting n values: ";
     for (size_t i = 0; i < nValues.size(); i++) {

@@ -22,9 +22,9 @@ int main(int argc, char* argv[]) {
   std::cout << "Executions per test: " << executions << std::endl << std::endl;
 
   std::vector<std::string> commands = {
-    "./tests/test " + std::to_string(executions),           
-    "python3 tests/test.py " + std::to_string(executions),
-    "node tests/test.js " + std::to_string(executions)
+    ".\\tests\\test.exe " + std::to_string(executions),           
+    "python tests\\test.py " + std::to_string(executions),
+    "node tests\\test.js " + std::to_string(executions)
   };
 
   std::vector<std::string> test_names = {
