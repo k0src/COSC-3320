@@ -69,16 +69,16 @@ private:
   void moveAdjacent(int n, const std::string& src, const std::string& dst) {
     if (n == 0) return;
 
-    std::set<std::string> auxCanidate;
+    std::set<std::string> auxCandidates;
     std::set<std::string> srcSet = {src};
     std::set_difference(graph.at(dst).begin(), graph.at(dst).end(),
                         srcSet.begin(), srcSet.end(),
-                        std::inserter(auxCanidate, auxCanidate.begin()));
+                        std::inserter(auxCandidates, auxCandidates.begin()));
 
-    if (auxCanidate.empty()) {
+    if (auxCandidates.empty()) {
       throw std::logic_error("No valid auxiliary peg found");
     }
-    std::string aux = *auxCanidate.begin();
+    std::string aux = *auxCandidates.begin();
 
     moveNonAdjacent(n - 1, src, aux);
     moveDisk(src, dst);
