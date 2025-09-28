@@ -7,12 +7,17 @@
 #include <algorithm>
 #include <stdexcept>
 #include <cmath>
-#include <cassert>
-#include <iomanip>
+#include <fstream>
 
 class HanoiGraphSolver {
 public:
-  HanoiGraphSolver(int n) : _n(n), moveCount(0) {
+  HanoiGraphSolver(int n, const std::string& filename) : _n(n), moveCount(0) {
+    // Open output file
+    outputFile.open(filename);
+    if (!outputFile.is_open()) {
+      throw std::runtime_error("Failed to open output file");
+    }
+
     // Define the graph using an adjacency list 
     graph["Start"] = {"A1"};
     graph["A1"] = {"Start", "Dest", "A3"};
@@ -31,10 +36,16 @@ public:
     }
   }
 
+  ~HanoiGraphSolver() {
+    if (outputFile.is_open()) {
+      outputFile.close();
+    }
+  }
+
   void solve() {
-    std::cout << "Solving Towers of Hanoi for " << _n << " disks" << std::endl;
+    outputFile << "Solving Towers of Hanoi for " << _n << " disks" << std::endl;
     startToDest(_n);
-    std::cout << "Total moves: " << moveCount << std::endl;
+    outputFile << "Total moves: " << moveCount << std::endl;
   }
 
 private:
@@ -52,7 +63,7 @@ private:
 
     towers.at(dst).push_back(disk);
     moveCount++;
-    std::cout << "Move " << std::setw(5) << moveCount 
+    outputFile << "Move " << moveCount 
               << ": Move disk " << disk << " from " << src 
               << " to " << dst << std::endl;
   }
@@ -97,23 +108,28 @@ private:
     if (neighbors.empty()) {
       throw std::logic_error("No path of length 2 between " + src + " and " + dst);
     }
-    std::string inter = *neighbors.begin();
+    std::string aux = *neighbors.begin();
 
-    moveAdjacent(n, src, inter);
-    moveAdjacent(n, inter, dst);
+    moveAdjacent(n, src, aux);
+    moveAdjacent(n, aux, dst);
   }
 
   int _n;
   long long moveCount;
   std::map<std::string, std::set<std::string>> graph;
   std::map<std::string, std::vector<int>> towers;
+  std::ofstream outputFile;
 };
 
 int main() {
-  int n = 5;
+  std::vector<int> nValues = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-  HanoiGraphSolver solver(n);
-  solver.solve();
+  for (int n : nValues) {
+    HanoiGraphSolver solver(n, "hanoi_graph_solution_" 
+                                + std::to_string(n) + 
+                                "_disks.txt");
+    solver.solve();
+  }
 
   return 0;
 }

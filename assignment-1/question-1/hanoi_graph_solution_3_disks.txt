@@ -1,0 +1,28 @@
+Solving Towers of Hanoi for 3 disks
+Move 1: Move disk 1 from Start to A1
+Move 2: Move disk 1 from A1 to Dest
+Move 3: Move disk 1 from Dest to A1
+Move 4: Move disk 1 from A1 to A3
+Move 5: Move disk 2 from Start to A1
+Move 6: Move disk 2 from A1 to Dest
+Move 7: Move disk 1 from A3 to A1
+Move 8: Move disk 1 from A1 to Dest
+Move 9: Move disk 1 from Dest to A1
+Move 10: Move disk 1 from A1 to A3
+Move 11: Move disk 2 from Dest to A1
+Move 12: Move disk 1 from A3 to A1
+Move 13: Move disk 1 from A1 to A3
+Move 14: Move disk 1 from A3 to A2
+Move 15: Move disk 2 from A1 to A3
+Move 16: Move disk 1 from A2 to A3
+Move 17: Move disk 3 from Start to A1
+Move 18: Move disk 3 from A1 to Dest
+Move 19: Move disk 1 from A3 to A1
+Move 20: Move disk 1 from A1 to Dest
+Move 21: Move disk 2 from A3 to A1
+Move 22: Move disk 1 from Dest to A1
+Move 23: Move disk 1 from A1 to A3
+Move 24: Move disk 1 from A3 to A2
+Move 25: Move disk 2 from A1 to Dest
+Move 26: Move disk 1 from A2 to Dest
+Total moves: 26

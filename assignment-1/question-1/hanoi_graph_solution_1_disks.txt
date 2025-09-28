@@ -1,0 +1,4 @@
+Solving Towers of Hanoi for 1 disks
+Move 1: Move disk 1 from Start to A1
+Move 2: Move disk 1 from A1 to Dest
+Total moves: 2
