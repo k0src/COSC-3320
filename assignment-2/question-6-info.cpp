@@ -1,81 +1,76 @@
-#include <windows.h>
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <unistd.h>
+#include <sys/sysinfo.h>
 #include <iomanip>
-#include <psapi.h>
 #include <vector>
+#include <filesystem>
+
+using namespace std;
 
 void print_memory_status() {
-  MEMORYSTATUSEX mem_status = {0};
-  mem_status.dwLength = sizeof(mem_status);
-  if (GlobalMemoryStatusEx(&mem_status)) {
-    std::cout << "\nPhysical Memory\n";
-    std::cout << "Total Physical Memory: " << mem_status.ullTotalPhys / (1024 * 1024) << " MB\n";
-    std::cout << "Available Physical Memory: " << mem_status.ullAvailPhys / (1024 * 1024) << " MB\n";
-    std::cout << "Total Virtual Memory: " << mem_status.ullTotalVirtual / (1024 * 1024) << " MB\n";
-    std::cout << "Available Virtual Memory: " << mem_status.ullAvailVirtual / (1024 * 1024) << " MB\n";
+  struct sysinfo info;
+  if (sysinfo(&info) == 0) {
+    double total_phys = info.totalram * info.mem_unit / (1024.0 * 1024.0);
+    double avail_phys = info.freeram * info.mem_unit / (1024.0 * 1024.0);
+    double total_swap = info.totalswap * info.mem_unit / (1024.0 * 1024.0);
+    double avail_swap = info.freeswap * info.mem_unit / (1024.0 * 1024.0);
+
+    cout << "\nPhysical Memory\n";
+    cout << "Total Physical Memory: " << total_phys << " MB\n";
+    cout << "Available Physical Memory: " << avail_phys << " MB\n";
+    cout << "Total Swap: " << total_swap << " MB\n";
+    cout << "Available Swap: " << avail_swap << " MB\n";
   }
 }
 
 void print_page_size() {
-  SYSTEM_INFO sys_info;
-  GetSystemInfo(&sys_info);
-
-  std::cout << "\nSystem Info\n";
-  std::cout << "Page Size: " << sys_info.dwPageSize << " bytes\n";
-  std::cout << "Minimum Application Address: " << sys_info.lpMinimumApplicationAddress << "\n";
-  std::cout << "Maximum Application Address: " << sys_info.lpMaximumApplicationAddress << "\n";
-  std::cout << "Number of Processors: " << sys_info.dwNumberOfProcessors << "\n";
-}
-
-void print_performance_info() {
-  PERFORMACE_INFORMATION perf_info = {0};
-  perf_info.cb = sizeof(perf_info);
-
-  if (GetPerformanceInfo(&perf_info, sizeof(perf_info))) {
-    std::cout << "\nPerformance Information\n";
-    std::cout << "System Page Size: " << perf_info.PageSize << " bytes\n";
-    std::cout << "Physical Pages: " << perf_info.PhysicalTotal << "\n";
-    std::cout << "Available Physical Pages: " << perf_info.PhysicalAvailable << "\n"; 
-    std::cout << "System Cache Pages: " << perf_info.SystemCache << "\n";
-    std::cout << "Commit Limit: " << perf_info.CommitLimit << "\n";
-    std::cout << "Commit Peak: " << perf_info.CommitPeak << "\n";
-  }
+  long page_size = sysconf(_SC_PAGESIZE);
+  long num_proc = sysconf(_SC_NPROCESSORS_ONLN);
+  cout << "\nSystem Info\n";
+  cout << "Page Size: " << page_size << " bytes\n";
+  cout << "Number of Processors: " << num_proc << "\n";
 }
 
 void print_cache_info() {
-  DWORD len = 0;
-  GetLogicalProcessorInformationEx(RelationCache, nullptr, &len);
-  std::vector<char> buffer(len);
-  if (!GetLogicalProcessorInformationEx(RelationCache, reinterpret_cast<PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX>(buffer.data()), &len)) {
-    return;
-  }
+  cout << "\nCache Information\n";
+  string base = "/sys/devices/system/cpu/cpu0/cache/";
 
-  std::cout << "\nCache Information\n";
+  for (const auto& entry : filesystem::directory_iterator(base)) {
+    string level_path = entry.path().string() + "/level";
+    string type_path = entry.path().string() + "/type";
+    string size_path = entry.path().string() + "/size";
 
-  auto* ptr = reinterpret_cast<PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX>(buffer.data());
-  DWORD offset = 0;
+    ifstream level_file(level_path), type_file(type_path), size_file(size_path);
+    if (!level_file || !type_file || !size_file) continue;
 
-  while (offset < len) {
-    PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX info = reinterpret_cast<PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX>(buffer.data() + offset);
-    if (info->Relationship == RelationCache) {
-      const CACHE_RELATIONSHIP &cache = info->Cache;
-      std::cout << "Level: " << static_cast<int>(cache.Level);
-      std::cout << " Cache Size: " << cache.CacheSize / 1024 << " KB";
-      std::cout << " Line Size: " << cache.LineSize << " bytes";
-      std::cout << " Type: " << (cache.Type == CacheData ? "Data" : 
-                                 cache.Type == CacheInstruction ? "Instruction" : "Unified") << "\n";
-    }
-    offset += info->Size;
+    string level, type, size;
+    getline(level_file, level);
+    getline(type_file, type);
+    getline(size_file, size);
+
+    cout << "Level " << level << " Cache (" << type << ") Size: " << size << "\n";
   }
 }
 
-int main()
+void print_virtual_memory_info() {
+  ifstream file("/proc/meminfo");
+  cout << "\nVirtual Memory (/proc/meminfo)\n";
+  string line;
+  int count = 0;
+  while (getline(file, line) && count < 10) { 
+    cout << line << "\n";
+    ++count;
+  }
+}
+
+int main() 
 {
-  std::cout << std::fixed << std::setprecision(2);
+  cout << fixed << setprecision(2);
   print_memory_status();
   print_page_size();
-  print_performance_info();
+  print_virtual_memory_info();
   print_cache_info();
-
   return 0;
 }
