@@ -13,7 +13,7 @@ struct Metrics {
   long page_faults;
 };
 
-Metrics get_process_metrics(double elapseds_s) {
+Metrics get_process_metrics(double elapsed_s) {
   struct rusage usage{};
   getrusage(RUSAGE_SELF, &usage);
 

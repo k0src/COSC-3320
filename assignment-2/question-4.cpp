@@ -1,62 +1,75 @@
 #include <iostream>
 #include <vector>
-#include <tuple>
-#include <chrono>
 #include <random>
-#include <cstdint>
+#include <chrono>
+#include <iomanip>
+#include <cstdlib>
 
-using data_item = std::tuple<int, int, int>;
-using matrix = std::vector<std::vector<int>>;
+using namespace std;
+using namespace std::chrono;
 
-// Random number generator
-int gen_random_number(int max) {
-  static std::mt19937_64 rng(std::chrono::steady_clock::now().time_since_epoch().count());
-  std::uniform_int_distribution<int> dist(0, max);
-  return dist(rng);
-}
-
-// Creates an n x n matrix initialized with zeros
-matrix create_matrix(int n) {
-  return matrix(n, std::vector<int>(n, 0));
-}
-
-// Apply a single update 
-inline void apply_update(matrix& mat, int row, int col, int value) {
-  mat[row][col] += value;
-}
-
-int main() 
+int main()
 {
-  std::vector<int> n_values = {16, 64, 256, 1024, 4096, 16384};
-  std::vector<long long> m_values = {1677721600LL, 13421772800LL};
+  vector<long long> n_values = {16, 64, 256, 1024, 4096, 16384};
+  vector<long long> m_values = {1677721600LL, 13421772800LL};
 
-  for (size_t i = 0; i < n_values.size(); ++i) {
-    for (size_t j = 0; j < m_values.size(); ++j) {
-      int n = n_values[i];
-      long long m = m_values[j];
+  cout << fixed << setprecision(3);
 
-      matrix mat = create_matrix(n);
+  for (long long m : m_values) {
+    cout << "\nResults for m = " << m << " update operations\n";
+    cout << string(90, '=') << "\n";
+    cout << setw(8) << "n"
+         << setw(12) << "n^2"
+         << setw(15) << "Matrix (MB)"
+         << setw(15) << "Time (sec)"
+         << setw(18) << "Ops/sec (M)"
+         << setw(12) << "m/n^2\n";
+    cout << string(90, '-') << "\n";
 
-      std::cout << "Running test with n: " << n << ", and m: " << m << std::endl;
+    for (long long n : n_values) {
+      long long n_squared = n * n;
 
-      auto start = std::chrono::high_resolution_clock::now();
+      double matrix_size_mb = (static_cast<double>(n) * n * 8.0) / (1024.0 * 1024.0);
+      double m_over_n2 = static_cast<double>(m) / static_cast<double>(n_squared);
 
-      for (long long t = 0; t < m; ++t) {
-        int row = gen_random_number(n - 1);
-        int col = gen_random_number(n - 1);
-        int value = gen_random_number(100); 
-        apply_update(mat, row, col, value);
+      try {
+        vector<vector<double>> M(n, vector<double>(n, 0.0));
+
+        random_device rd;
+        mt19937_64 gen(rd());
+
+        uniform_int_distribution<long long> dist_index(1, n);
+        uniform_real_distribution<double> dist_value(-1.0, 1.0);
+
+        auto start = high_resolution_clock::now();
+
+        for (long long k = 0; k < m; k++) {
+          long long i = dist_index(gen);
+          long long j = dist_index(gen);
+          double x = dist_value(gen);
+          M[i - 1][j - 1] += x;
+        }
+
+        auto end = high_resolution_clock::now();
+        duration<double> elapsed = end - start;
+
+        double ops_per_sec = m / elapsed.count();
+        double ops_per_sec_millions = ops_per_sec / 1000000.0;
+
+        cout << setw(8) << n
+             << setw(12) << n_squared
+             << setw(15) << matrix_size_mb
+             << setw(15) << elapsed.count()
+             << setw(18) << ops_per_sec_millions
+             << setw(12) << fixed << setprecision(1) << m_over_n2 << "\n";
       }
-
-      auto end = std::chrono::high_resolution_clock::now();
-      std::chrono::duration<double> elapsed = end - start;
-
-      std::cout << "n: " << n 
-                << ", m: " << m 
-                << ", Time: " << elapsed.count() << " seconds" 
-                << std::endl;
+      catch (bad_alloc &e) {
+        cout << setw(8) << n
+             << setw(12) << n_squared
+             << setw(15) << matrix_size_mb
+             << " Could not allocate matrix (insufficient memory)\n";
+      }
     }
   }
-
   return 0;
 }
