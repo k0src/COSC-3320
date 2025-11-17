@@ -29,7 +29,7 @@ Metrics get_process_metrics(double elapsed_s) {
   return m;
 }
 
-Metrics run_workload(size_t data_size_bytes, bool random_access, int iterations) {
+Metrics run_workload(size_t data_size_bytes, bool random_access) {
   long page_size = sysconf(_SC_PAGESIZE);
   size_t num_pages = data_size_bytes / page_size;
 
@@ -47,13 +47,11 @@ Metrics run_workload(size_t data_size_bytes, bool random_access, int iterations)
   volatile unsigned long long sink = 0;
   auto start = std::chrono::high_resolution_clock::now();
 
-  for (int it = 0; it < iterations; ++it) {
-    for (int t = 0; t < touches_per_page; ++t) {
-      for (size_t p = 0; p < num_pages; ++p) {
-        size_t offset = page_indices[p] * page_size;
-        data[offset] += 1;
-        sink += data[offset];
-      }
+  for (int t = 0; t < touches_per_page; ++t) {
+    for (size_t p = 0; p < num_pages; ++p) {
+      size_t offset = page_indices[p] * page_size;
+      data[offset] += 1;
+      sink += data[offset];
     }
   }
 
@@ -74,7 +72,6 @@ int main()
 {
   const double M_bytes = 8.0 * 1024 * 1024 * 1024; 
   std::vector<double> ratios = {0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99, 1.0, 1.01, 1.1, 1.5, 2.0};
-  int iterations = 1;
 
   std::ofstream out("memory_scaling_results.csv");
   out << "C/M,Data_Size_GB,Seq_Time_s,Seq_RSS_KB,Seq_PageFaults,"
@@ -86,8 +83,8 @@ int main()
     std::cout << "C/M = " << ratio << " (" << data_size_gb << " GB)\n";
 
     try {
-      Metrics seq = run_workload((size_t)data_size_bytes, false, iterations);
-      Metrics rnd = run_workload((size_t)data_size_bytes, true, iterations);
+      Metrics seq = run_workload((size_t)data_size_bytes, false);
+      Metrics rnd = run_workload((size_t)data_size_bytes, true);
       log_results(out, ratio, data_size_gb, seq, rnd);
     } catch (const std::bad_alloc&) {
       std::cerr << "Memory allocation failed at C/M = " << ratio << "\n";
